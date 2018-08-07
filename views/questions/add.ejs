@@ -1,0 +1,27 @@
+<%- include ../layouts/header.ejs %>	
+
+<% if (messages.error) { %>
+	<p style="color:red"><%- messages.error %></p>
+<% } %>
+
+<% if (messages.success) { %>
+	<p style="color:green"><%- messages.success %></p>
+<% } %>
+
+<div class="page-header">
+  <h4>New Query Form</h4>      
+</div>
+
+<form action="/questions/add" method="POST">
+  <div class="form-group">
+    <label for="email">Query:</label>
+    <input type="text" class="form-control" name="question" id="question" />
+  </div>
+  <div class="form-group">
+    <label for="answer">Response:</label>
+    <input type="text" class="form-control" id="answer" name="answer" />
+  </div>
+  <button type="submit" class="btn btn-primary" name="Submit" value="Add">Submit</button>
+</form>
+
+<%- include ../layouts/footer.ejs %>

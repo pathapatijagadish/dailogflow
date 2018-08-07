@@ -1,0 +1,79 @@
+<%- include ../layouts/header.ejs %>	
+
+<% if (messages.error) { %>
+	<p style="color:red"><%- messages.error %></p>
+<% } %>
+
+<% if (messages.success) { %>
+	<p style="color:green"><%- messages.success %></p>
+<% } %>
+
+<div class="page-header">
+  <h4>New Query Form</h4>      
+</div>
+
+<div class="container">
+    <div class="row">
+        <input type="hidden" name="count" value="1" />
+        <div class="control-group" id="fields">
+            <label class="control-label" for="field1">Nice Multiple Form Fields</label>
+            <div class="controls" id="profs"> 
+                <form class="input-append">
+                 	<div id="field">
+                 	<label>Question1</label>
+                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
+                    </div>
+                    <div id="field">
+                    <label>Question2</label>
+                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
+                    </div>
+                    <div id="field">
+                    <label>Question3</label>
+                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
+                    </div>
+                    <div id="field">
+                    <label>Question4</label>
+                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
+                    </div>
+                    <div id="field">
+                    <label>Question5</label>
+                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
+                    </div>
+
+
+                    <div id="field" style="disply:none;">
+                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
+                        <input autocomplete="off" class="input" id="answer1" name="answer1" type="text" placeholder="Type something" data-items="8"/>
+                    </div>
+                    <button id="b1" class="btn add-more" type="button">+</button>
+                   
+                </form>
+            <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include ../layouts/footer.ejs %>
+<script>
+        $(document).ready(function(){
+            var next = 1;
+            $(".add-more").click(function(e){
+                var fieldHTML = '<div id="button_'+ next +'"><input type="text" name="context[' + next + ']" value=""/> <input autocomplete="off" class="input" id="answer1" name="context[' + next + ']" type="text" placeholder="Type something" data-items="8"/> <input autocomplete="off" class="input" id="action1" name="context[' + next + ']" type="checkbox" data-items="8"/><button id="button_' + next + '" class="btn remove-more" type="button">-</button></div>';
+                $('.input-append').append(fieldHTML)
+                next +=1;
+                $(".remove-more").click(function(e){
+                    var id = this.id;
+                    var fieldID = "#" + id;
+                    $(fieldID).remove();
+                });   
+            });  
+        });
+        $(".b12").submit(function(e) {
+           alert("hi");
+            // var form = $(this);
+            // alert(form)
+            // e.preventDefault();
+            // var url = form.attr('action');
+        });
+    </script>

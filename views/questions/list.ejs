@@ -1,0 +1,75 @@
+<%- include ../layouts/header.ejs %>
+<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+
+<% if (messages.error) { %>
+	<p style="color:red"><%- messages.error %></p>
+<% } %>
+
+<% if (messages.success) { %>
+	<p style="color:green"><%- messages.success %></p>
+<% } %>	
+
+<table class="table table-hover">
+	<thead >
+		<tr>
+      <th scope="col">Query</th>
+      <th scope="col">Response</th>
+      <th scope="col">Intent</th>
+      <th scope="col">Action</th>
+	  </tr>
+  </thead>
+	<tbody>
+		<% if (data) { %>
+			<% data.forEach(function(user){ %>
+				<tr>
+					<span><input type="hidden" name="que_id" id="que_id" value="<%= user.id%>"></span>
+					<td><%= user.question %></td>
+					<td><%= user.answer %></td>
+					<% if(user.intent){ %>
+	   				<td>
+	   					<div class="form-group">
+  						<input type="text" class="form-control" name="intent" id="intent" value="<%= user.intent%>" disabled/>
+					</div>
+	   					</td>
+						<td><button  class="btn btn-info" type="button" disabled>Created</button></td>
+	 				<% } else{ %>  
+	   				<td>
+	   				<div class="form-group">
+  						<input type="text" class="form-control" name="intent" id="intent-<%= user.id%>"/>
+					</div>
+	   				</td>
+						<td><button  class="btn btn-info" id="<%= user.id %>" value="<%= user.intent%>">Create Intent</button></td>
+					<% } %>
+				</tr>
+			<% }) %>
+		<% } %>
+	</tbody>
+</table>
+
+<%- include ../layouts/footer.ejs %>
+
+<script>
+$(document).ready(function(){
+	$("button").on("click", function () {
+		var que_id = $(this).attr('id');
+		var intent = $('#intent-'+ que_id).val();
+		$.ajax({
+	    url : 'questions/add/intent',
+	    type : 'POST',
+	    data : {
+	        'intent' : intent,
+	        'que_id' :	que_id
+	    },
+	    success : function(data) {              
+	      alert("Successfully Intent Created");
+	      window.location.reload();
+	    },
+	    error : function(request,error)
+	    {
+	    	console.log("error");
+	      alert("Something went wrong");
+	    }
+		});
+	});
+});
+</script>

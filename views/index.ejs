@@ -1,0 +1,9 @@
+<%- include layouts/header.ejs %>	
+	<h1>Welcome To Gina</h1>
+	<p>Training Module</p>
+	<% if(!req.session.user){ %>
+		<p>
+			<a class="btn btn-lg btn-primary" href="/users/signin" role="button">Lets Start »</a>
+		</p>
+	<% } %>
+<%- include layouts/footer.ejs %>
