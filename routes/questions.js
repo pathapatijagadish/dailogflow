@@ -132,6 +132,57 @@ app.post('/add/intent', function(req, res){
 	})
 })
 
+
+// app.get('/add_questions/first',function(req, res) {
+// 	res.render('add_questions/add_questions')
+// })
+
+app.post('/add_question', function(req, res, next){	
+	var post  = req.body;
+
+	var sub_que = [];
+  for(count=1; count<5; count++ )	{
+		var t = "Question_" + count;
+		var que = [post[t], post.question_id]
+		sub_que.push(que);
+	}
+
+	req.getConnection(function(error, conn) {
+		var sql = "INSERT INTO sub_questions (question, question_id)  VALUES ? "; 
+		conn.query(sql,[sub_que], function(err, result) {
+			if (err) {
+				console.log("error")
+			} else {
+				console.log("t2 success")
+			}
+		});	
+	});
+
+	var context_que =[];
+	for(a=0; a < (post.question.length) ; a++ )	{
+		var question_id = post.question_id;
+		var qry = post.question[a];
+		var answer = post.answer[a];
+		var final_que = [question_id, qry, answer]
+		context_que.push(final_que)		
+	}
+
+	console.log(context_que);
+
+	req.getConnection(function(error, conn) {
+		var sql2 = "INSERT INTO context_questions (question_id, question, answer) VALUES ? ";
+		conn.query(sql2,[context_que], function(err, result) {
+			if (err) {
+				console.log(error)
+			} else {
+				console.log("t3 success")
+			}				
+		});	
+	});
+	res.render('index', {title: 'My Training Module', req: req})			
+});
+
+
 // ADD NEW Question POST ACTION
 app.post('/add', function(req, res, next){
 	req.assert('question', 'Query is required').notEmpty()
@@ -163,12 +214,16 @@ app.post('/add', function(req, res, next){
 								answer: question.answer
 							})
 						} else {				
-							req.flash('success', 'Data added successfully!')							
-							res.render('questions/new_form', {
-								title: 'Add New Question',
-								req: req,
-								question: '',
-								answer: ''
+							conn.query("select * from questions where id =?", result.insertId, function(err, user){
+								req.flash('success', "Data added successfully")
+								console.log(user);
+								res.render('questions/add_question', {
+									title: 'Add New Question',
+									req: req,
+									question: '',
+									answer: '',
+									q_id: user
+								})							
 							})
 						}
 					})

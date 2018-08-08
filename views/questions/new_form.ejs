@@ -1,79 +1,91 @@
-<%- include ../layouts/header.ejs %>	
+<html lang="en">
+<head>
+  <title>Add Questions</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<style>
+  .group{ margin-top:21px !important;  }
+</style>
 
-<% if (messages.error) { %>
-	<p style="color:red"><%- messages.error %></p>
-<% } %>
-
-<% if (messages.success) { %>
-	<p style="color:green"><%- messages.success %></p>
-<% } %>
-
-<div class="page-header">
-  <h4>New Query Form</h4>      
-</div>
-
-<div class="container">
-    <div class="row">
-        <input type="hidden" name="count" value="1" />
-        <div class="control-group" id="fields">
-            <label class="control-label" for="field1">Nice Multiple Form Fields</label>
-            <div class="controls" id="profs"> 
-                <form class="input-append">
-                 	<div id="field">
-                 	<label>Question1</label>
-                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
-                    </div>
-                    <div id="field">
-                    <label>Question2</label>
-                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
-                    </div>
-                    <div id="field">
-                    <label>Question3</label>
-                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
-                    </div>
-                    <div id="field">
-                    <label>Question4</label>
-                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
-                    </div>
-                    <div id="field">
-                    <label>Question5</label>
-                        <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
-                    </div>
-
-
-                    <div id="field" style="disply:none;">
+</head>
+<body>
+  <div class="container">
+    <div class="panel panel-default">
+      <div class="panel-heading"><h1>Add Questions</h1></div>
+      <div class="panel-body">
+        <form action="/questions/add_question" method="POST">
+          <div>Q) Who is our PM ? <br/></div>
+          <div>A) Modi</div>
+            <div >              
+              <input type="text" name="Question_1" class="form-control" placeholder="Add Question1 " style="margin-bottom: 10px;">
+              <input type="text" name="Question_2" class="form-control" placeholder="Add Question2 " style="margin-bottom: 10px;">
+              <input type="text" name="Question_3" class="form-control" placeholder="Add Question3" style="margin-bottom: 10px;">
+              <input type="text" name="Question_4" class="form-control" placeholder="Add Question4" style="margin-bottom: 10px;">
+              <input type="text" name="TID" class="form-control" placeholder="Add Question4" value="ID000001" style="margin-bottom: 10px; " >
+            </div>
+            <div >
+              <label for="chkPassport">
+                <input type="checkbox" id="chkPassport" />Extra Fields
+              </label><br/>            
+              <div id="dvPassport" style="display: none">                                
+                <div class="input-group control-group after-add-more" style=" margin-bottom:30px;">        
+                  <input type="text" name="question" class="form-control" placeholder="Add Question" style=" margin-bottom:10px ">
+                  <input type="text" name="answer" class="form-control" placeholder="Add Answer">
+                  <input type="checkbox"  />
+                  Action
+                  <div class="input-group-btn"> 
+                    <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                  </div>
+                </div> 
+                <div class="copy hide" id="field">
+                   <div id="field">
                         <input autocomplete="off" class="input" id="question1" name="question1" type="text" placeholder="Type something" data-items="8"/>
                         <input autocomplete="off" class="input" id="answer1" name="answer1" type="text" placeholder="Type something" data-items="8"/>
                     </div>
                     <button id="b1" class="btn add-more" type="button">+</button>
-                   
-                </form>
-            <br>
+                </div>
+              </div>
+            </div><br/>
+            <div class="container-floud">
+              <button value="submit" name="submit" type="submit">Submit </button>
             </div>
-        </div>
+        </form>
     </div>
+  </div>
 </div>
+<script type="text/javascript">
 
-<%- include ../layouts/footer.ejs %>
-<script>
-        $(document).ready(function(){
-            var next = 1;
-            $(".add-more").click(function(e){
-                var fieldHTML = '<div id="button_'+ next +'"><input type="text" name="context[' + next + ']" value=""/> <input autocomplete="off" class="input" id="answer1" name="context[' + next + ']" type="text" placeholder="Type something" data-items="8"/> <input autocomplete="off" class="input" id="action1" name="context[' + next + ']" type="checkbox" data-items="8"/><button id="button_' + next + '" class="btn remove-more" type="button">-</button></div>';
-                $('.input-append').append(fieldHTML)
-                next +=1;
-                $(".remove-more").click(function(e){
-                    var id = this.id;
-                    var fieldID = "#" + id;
-                    $(fieldID).remove();
-                });   
-            });  
+
+    $(document).ready(function() {
+          var next = 1;
+          $(".add-more").click(function(e){
+              var fieldHTML = '<div id="button_'+ next +'"><input type="text" name="context[' + next + ']" value=""/> <input autocomplete="off" class="input" id="answer1" name="context[' + next + ']" type="text" placeholder="Type something" data-items="8"/> <input autocomplete="off" class="input" id="action1" name="context[' + next + ']" type="checkbox" data-items="8"/><button id="button_' + next + '" class="btn remove-more" type="button">-</button></div>';
+              $('.hide').append(fieldHTML)
+              next +=1;
+              $(".remove-more").click(function(e){
+                  var id = this.id;
+                  var fieldID = "#" + id;
+                  $(fieldID).remove();
+              });   
+          });  
+
+      $("body").on("click",".remove",function(){ 
+        $(this).parents(".control-group").remove();
+      });
+    });
+
+    
+  
+    $(function () {
+        $("#chkPassport").click(function () {
+            if ($(this).is(":checked")) {
+                $("#dvPassport").show();
+            } else {
+                $("#dvPassport").hide();
+            }
         });
-        $(".b12").submit(function(e) {
-           alert("hi");
-            // var form = $(this);
-            // alert(form)
-            // e.preventDefault();
-            // var url = form.attr('action');
-        });
-    </script>
+    });
+                 
+
+
+</script>

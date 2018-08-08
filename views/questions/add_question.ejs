@@ -1,0 +1,74 @@
+<%- include ../layouts/header.ejs %>
+  <div class="container">
+    <div class="panel panel-default">
+      <div class="panel-heading"><h1>Add Questions</h1></div>
+      <div class="panel-body">
+        <form action="/questions/add_question" method="POST">
+          <div><%= q_id[0].question %><br/></div>
+          <div><%= q_id[0].answer %></div>
+            <div >              
+              <input type="text" name="Question_1" class="form-control" placeholder="Add Question1 " style="margin-bottom: 10px;">
+              <input type="text" name="Question_2" class="form-control" placeholder="Add Question2 " style="margin-bottom: 10px;">
+              <input type="text" name="Question_3" class="form-control" placeholder="Add Question3" style="margin-bottom: 10px;">
+              <input type="text" name="Question_4" class="form-control" placeholder="Add Question4" style="margin-bottom: 10px;">
+              <input type="hidden" name="question_id" class="form-control" value="<%= q_id[0].id %>" style="margin-bottom: 10px; " >
+            </div>
+            <div >
+              <label for="chkPassport">
+                <input type="checkbox" id="chkPassport" />Extra Fields
+              </label><br/>            
+              <div id="dvPassport" style="display: none">                                
+                <div class="input-group control-group after-add-more" style=" margin-bottom:30px;">  
+                  <input type="text" name="question[0]" class="form-control" placeholder="Add Question" style=" margin-bottom:10px ">
+                  <input type="text" name="answer[0]" class="form-control" placeholder="Add Answer">
+                  <div class="input-group-btn"> 
+                    <button class="btn btn-success add-more" type="button"><i class="glyphicon glyphicon-plus"></i> Add</button>
+                  </div>
+                </div> 
+            </div><br/>
+            <div class="container-floud">
+              <button value="submit" name="submit" type="submit">Submit </button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<%- include ../layouts/footer.ejs %>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function() {
+          var next = 1;
+          $(".add-more").click(function(e){
+              var fieldHTML = '<div id="button_'+ next +'"><input type="text" name="question[' + next + ']"  class="form-control" placeholder="Add Question" style=" margin-bottom:10px "><input type="text" name="answer[' + next + ']"  class="form-control" placeholder="Add Answer"><button id="button_' + next + '" class="btn remove-more" type="button">-</button></div>';
+              $('.after-add-more').append(fieldHTML)
+              next +=1;
+              $(".remove-more").click(function(e){
+                  var id = this.id;
+                  var fieldID = "#" + id;
+                  $(fieldID).remove();
+              });   
+          });  
+
+      $("body").on("click",".remove",function(){ 
+        $(this).parents(".control-group").remove();
+      });
+    });
+
+    
+  
+    $(function () {
+        $("#chkPassport").click(function () {
+            if ($(this).is(":checked")) {
+                $("#dvPassport").show();
+            } else {
+                $("#dvPassport").hide();
+            }
+        });
+    });
+                 
+
+
+</script>
