@@ -9,30 +9,31 @@
 	<p style="color:green"><%- messages.success %></p>
 <% } %>	
 
-<form action="/questions/add_response" method="POST">
 
   <div class="form-group">
     <label for="email">Intent</label>
-    <input type="hidden" class="form-control" id="intent" name="intent" value="<%= question[0]["intent"] %>" /><%= question[0]["intent"] %>
+    <%= question[0]["intent"] %>
   </div>
 
   <div class="form-group">
     <label for="answer">Query</label>
-    <input type="hidden" class="form-control" id="query" name="query" value="<%= question[0]["que"]%>" /><%= question[0]["que"]%>
+    <%= question[0]["que"]%>
   </div>
 
   <div class="form-group">
     <label for="answer">Response:</label>
-    <input type="hidden" class="form-control" id="responses" name="responses" value="<%= question[0]["res_array"]%>" /><%= question[0]["res_array"]%>
+    <%= question[0]["res_array"]%>
   </div>
- 
-  <div class="form-group">
-		<label for="answer">Add Response:</label>
-    <input type="hidden" class="form-control" id="intent_id" name="intent_id" value="<%= question[0]["intent_id"]%>" />
-		<input type="text" class="form-control" id="response" name="response" />
-  </div>
-  <button type="submit" class="btn btn-primary" name="Submit" value="Add">Submit</button>
-</form>
+
+  <form action="/questions/add_response" method="POST">
+    <div class="form-group">
+      <input type="hidden" class="form-control" id="res_obj" name="res_obj" value="<%= req_obj %>" />
+      <label for="answer">Add Response:</label>
+      <input type="hidden" class="form-control" id="intent_id" name="intent_id" value="<%= question[0]["intent_id"]%>" />
+		  <input type="text" class="form-control" id="response" name="response" />
+    </div>
+    <button type="submit" class="btn btn-primary" name="Submit" value="Add">Submit</button>
+  </form>
 
 <%- include ../layouts/footer.ejs %>
 

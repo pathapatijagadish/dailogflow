@@ -34,41 +34,24 @@ app.get('/add', function(req, res, next){
 })
 
 app.post('/add_response', function(req, res) {
-	// render to views/index.ejs template file
 	var que_params = req.body
-  var intent = que_params['intent']
-  var query = que_params['query']
-  var responses = que_params['responses']
-  var intent_id = que_params['intent_id']
-  var response = que_params['response']
-	var intent_data = 	{
-													"name": intent,
-													"priority": 500000,
-													"responses": [
-														{
-												  		"defaultResponsePlatforms": {
-												    	"google": true
-												  	},
-												  	"messages": [
-												    		{
-											      			"speech": [ responses, response ],
-											      			"type": 0
-												    		}
-												  		]
-														}
-													],
-													"webhookForSlotFilling": false,
-													"webhookUsed": false
-												}
-			var query_str = 'https://api.dialogflow.com/v1/intents/' + intent_id + '?v=20150910&lang=en'
-			console.log(query_str);
-			unirest.put(query_str)
-			.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-			.send(intent_data)
-			.end(function (response) {
-				console.log(response.body);
-				console.log("success")
-			});
+ 	var intent_id = que_params['intent_id']
+ 	var res_obj = JSON.parse(que_params['res_obj'])
+ 	var query = que_params['response']
+ 	res_obj['responses'][0]['messages'].forEach(function(resp){
+ 		if (resp["speech"]){
+ 			resp["speech"].push(query);
+ 		}
+ 	});
+ 	delete res_obj["id"] 
+ 	console.log(res_obj)
+	var query_str = 'https://api.dialogflow.com/v1/intents/' + intent_id + '?v=20150910'
+	unirest.put(query_str)
+	.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+	.send(res_obj)
+	.end(function (response) {
+		res.render('index', {title: 'My Training Module', req: req})
+	});
 })
 
 
@@ -232,6 +215,8 @@ app.post('/add', function(req, res, next){
 				unirest.get('https://api.dialogflow.com/v1/intents/'+ in_id +'?v=20150910')
 				.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
 				.end(function (result){
+					console.log(result);
+					var res_obj = JSON.stringify(result.body);
 					let res_hash = [];
 					var res_int_id = result.body["id"]
 					var res_int_name = result.body["name"]
@@ -247,6 +232,7 @@ app.post('/add', function(req, res, next){
 						title: 'Add New Question',
 						question: res_hash,
 						req: req,
+						req_obj: res_obj,
 						answer: ''
 					})
 				});
