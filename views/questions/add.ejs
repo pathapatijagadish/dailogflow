@@ -21,7 +21,41 @@
     <label for="answer">Response:</label>
     <input type="text" class="form-control" id="answer" name="answer" />
   </div>
+  
+  <div class="form-check">
+    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+    <label class="form-check-label" for="defaultCheck1">
+      Add this query to existing intent
+    </label>
+  </div>
+
+  <div class="dropdown" style="display: none;">
+
+    <select class="selectpicker" name="intent">  
+      <ul>
+        <option value="">Select Intent</option>
+        <% intent_details.forEach((intent) => { %>
+         <option value="<%= intent["id"]%>"><%= intent["name"] %></option>
+        <% }) %>
+      </ul>
+    </select>
+  </div>
+
+
+
   <button type="submit" class="btn btn-primary" name="Submit" value="Add">Submit</button>
 </form>
 
 <%- include ../layouts/footer.ejs %>
+
+<script>
+$(document).ready(function() {  
+  $("#defaultCheck1").click(function () {
+    if ($(this).is(":checked")) {
+      $(".dropdown").show();
+    } else {
+      $(".dropdown").hide();
+    }
+  });
+});
+</script>
