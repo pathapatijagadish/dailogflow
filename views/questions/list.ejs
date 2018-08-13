@@ -20,25 +20,25 @@
   </thead>
 	<tbody>
 		<% if (data) { %>
-			<% data.forEach(function(user){ %>
+			<% data.forEach(function(question){ %>
 				<tr>
-					<span><input type="hidden" name="que_id" id="que_id" value="<%= user.id%>"></span>
-					<td><%= user.question %></td>
-					<td><%= user.answer %></td>
-					<% if(user.intent){ %>
+					<span><input type="hidden" name="que_id" id="que_id" value="<%= question.id%>"></span>
+					<td><%= question.question %></td>
+					<td><%= question.answer %></td>
+					<% if(question.intent){ %>
 	   				<td>
 	   					<div class="form-group">
-  						<input type="text" class="form-control" name="intent" id="intent" value="<%= user.intent%>" disabled/>
+  						<input type="text" class="form-control" name="intent" id="intent" value="<%= question.intent%>" disabled/>
 					</div>
 	   					</td>
 						<td><button  class="btn btn-info" type="button" disabled>Created</button></td>
 	 				<% } else{ %>  
 	   				<td>
 	   				<div class="form-group">
-  						<input type="text" class="form-control" name="intent" id="intent-<%= user.id%>"/>
+  						<input type="text" class="form-control" name="intent" id="intent-<%= question.id%>"/>
 					</div>
 	   				</td>
-						<td><button  class="btn btn-info" id="<%= user.id %>" value="<%= user.intent%>">Create Intent</button></td>
+						<td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button></td>
 					<% } %>
 				</tr>
 			<% }) %>

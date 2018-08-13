@@ -9,6 +9,7 @@ var session_store;
 
 // SHOW LIST OF QUESTIONS
 app.get('/', authentication_mdl.is_login, function(req, res, next) {
+	console.log("questions")
 	req.getConnection(function(error, conn) {
 		conn.query('SELECT * FROM questions WHERE intent is null ORDER BY id DESC',function(err, rows, fields) {
 			if (err) {
@@ -72,60 +73,75 @@ app.post('/add_response', function(req, res) {
 
 // SHOW INTENT CREATION
 app.post('/add/intent', function(req, res){	
-	var params = JSON.stringify(req.body);
+		var params = JSON.stringify(req.body);
     var que_params = JSON.parse(params);
     var que_id = que_params['que_id']
     var que_intent = que_params['intent']
     req.getConnection(function(error, conn) {
-    	sql = 'select * from questions where id = ?'
+    sql = 'select * from questions where id = ?'
 		conn.query(sql, que_id,function(err, rows, fields) {
 			var id = rows[0].id;
 			var question = rows[0].question;
-			var answer = rows[0].answer;
-			var intent_data = 	{
-					  								"contexts": [],
-														"events": [],
-														"fallbackIntent": false,
-														"name": que_intent,
-														"priority": 500000,
-														"responses": [
-															{
+			var answer = rows[0].answer;				
+			conn.query('select * from sub_questions where question_id = ?', que_id, function(error,sub_queries,values){
+				sub_que = [
+										{
+								  		"count": 0,
+								  		"data": [
+								    		{
+								      			"text": question
+								    		},
+								    		{
+								      			"userDefined": true
+								    		}
+								  		]
+										}
+									]
+				sub_queries.forEach(function(k,v){
+					sub_que.push({						
+						"count": 0,
+						"data": [
+							{
+								"text": sub_queries[v].question
+							},
+							{
+								"userDefined": true
+							}
+						]
+					});
+				})
+				var intent_data = 	{
+					  									"contexts": [],
+															"events": [],
+															"fallbackIntent": false,
+															"name": que_intent,
+															"priority": 500000,
+															"responses": [
+																{
 														  		"defaultResponsePlatforms": {
 														    		"google": true
 														  		},
 														  		"messages": [
 														    		{
-														      			"speech": answer,
-														      			"type": 0
+														      		"speech": answer,
+														      		"type": 0
 														    		}
 														  		]
-															}
-														],
-														"userSays": [
-															{
-														  		"count": 0,
-														  		"data": [
-														    		{
-														      			"text": question
-														    		},
-														    		{
-														      			"userDefined": true
-														    		}
-														  		]
-															}
-														],
-														"webhookForSlotFilling": false,
-														"webhookUsed": false
-													}
-			unirest.post('https://api.dialogflow.com/v1/intents?v=20150910')
-			.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-			.send(intent_data)
-			.end(function (response) {
-				console.log(response.body);
-				conn.query('UPDATE questions SET intent = ?, intent_id = ? WHERE id= ? ', [ que_intent, response.body['id'], que_id ], function(err, user) {
-					res.send(user);
+																}
+															],
+															"userSays": sub_que,
+															"webhookForSlotFilling": false,
+															"webhookUsed": false
+														}
+				unirest.post('https://api.dialogflow.com/v1/intents?v=20150910')
+				.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+				.send(intent_data)
+				.end(function (response) {
+					conn.query('UPDATE questions SET intent = ?, intent_id = ? WHERE id= ? ', [ que_intent, response.body['id'], que_id ], function(err, user) {
+						res.send(user);
+					});
 				});
-			});
+			})
 		})
 	})
 })
