@@ -56,7 +56,17 @@ app.post('/add_response', function(req, res) {
  	var query = que_params['response']
  	res_obj['responses'][0]['messages'].forEach(function(resp){
  		if (resp["speech"]){
- 			resp["speech"].push(query);
+ 			if (Array.isArray(resp["speech"])) {
+ 				console.log(resp["speech"])
+ 				resp["speech"].push(query);	
+ 			} else {
+ 				console.log(resp["speech"])
+ 				console.log("=============")
+ 				var val = resp["speech"]
+ 				resp["speech"] = [val]
+ 				console.log(resp["speech"])
+ 				resp["speech"].push(query);	
+ 			} 			
  		}
  	});
  	delete res_obj["id"] 
@@ -221,7 +231,17 @@ app.post('/add', function(req, res, next){
 						var que_params = result.body
 					 	que_params['responses'][0]['messages'].forEach(function(resp){
 					 		if (resp["speech"]){
-					 			resp["speech"].push(answer);
+					 			if (Array.isArray(resp["speech"])) {
+					 				console.log(resp["speech"])
+					 				resp["speech"].push(answer);	
+					 			} else {
+					 				console.log(resp["speech"])
+					 				console.log("=============")
+					 				var val = resp["speech"]
+					 				resp["speech"] = [val]
+					 				console.log(resp["speech"])
+					 				resp["speech"].push(answer);	
+					 			} 			
 					 		}
 					 	});
 					 	delete que_params["id"] 
