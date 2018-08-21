@@ -35,7 +35,7 @@
       <ul>
         <option value="">Select Intent</option>
         <% intent_details.forEach((intent) => { %>
-         <option value="<%= intent["id"]%>"><%= intent["name"] %></option>
+         <option value="<%= intent["id"]%>=<%= intent["name"] %>"><%= intent["name"] %></option>
         <% }) %>
       </ul>
     </select>

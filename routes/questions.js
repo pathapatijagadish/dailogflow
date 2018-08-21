@@ -17,11 +17,26 @@ app.get('/', authentication_mdl.is_login, function(req, res, next) {
 				res.render('index', {
 					req: req
 				})
-			} else {				
-				res.render('questions/list', {
-					req: req,
-					data: rows
-				})
+			} else {		
+				var query_str = 'https://api.dialogflow.com/v1/intents?v=20150910'
+				unirest.get(query_str)
+				.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+				.end(function (response) {
+					var intent_res = response.body
+					var all_intents = new Array();
+					intent_res.forEach(function(value, key){
+			    	all_intents.push({ 
+			        id: intent_res[key]["id"], 
+			        name: intent_res[key]["name"]
+			    	}); 
+					})
+					console.log(all_intents)
+					res.render('questions/list', {
+						intent_details: all_intents,
+						req: req,
+						data: rows
+					})
+				});		
 			}
 		})
 	})
@@ -87,6 +102,7 @@ app.post('/add/intent', function(req, res){
     var que_params = JSON.parse(params);
     var que_id = que_params['que_id']
     var que_intent = que_params['intent']
+    console.log(req.body);
     req.getConnection(function(error, conn) {
     sql = 'select * from questions where id = ?'
 		conn.query(sql, que_id,function(err, rows, fields) {
@@ -212,11 +228,12 @@ app.post('/add', function(req, res, next){
 	req.assert('question', 'Query is required').notEmpty()
 	req.assert('answer', 'Response is required').notEmpty()
 	var errors = req.validationErrors()
+	console.log(errors);
   if( !errors ) { 
   	let query_condition = ""
   	var que = req.body.question
   	var answer = req.body.answer
-  	var intent = req.body.intent  
+  	var intent = req.body.intent
  		unirest.post('https://api.dialogflow.com/v1/query?v=20150910')
 		.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
 		.send({ "lang": "en", "query": que, "sessionId": 1234 })
@@ -224,48 +241,35 @@ app.post('/add', function(req, res, next){
 		 	var query_condition = response.body["result"]["action"]
 		 	var in_id = response.body["result"]["metadata"]["intentId"]
 		 	if(query_condition == "input.unknown"){
+				console.log("===============");
+		 		console.log(intent);
 		 		if (intent) {
-					unirest.get('https://api.dialogflow.com/v1/intents/'+ intent +'?v=20150910')
-					.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-					.end(function (result){
-						var que_params = result.body
-					 	que_params['responses'][0]['messages'].forEach(function(resp){
-					 		if (resp["speech"]){
-					 			if (Array.isArray(resp["speech"])) {
-					 				console.log(resp["speech"])
-					 				resp["speech"].push(answer);	
-					 			} else {
-					 				console.log(resp["speech"])
-					 				console.log("=============")
-					 				var val = resp["speech"]
-					 				resp["speech"] = [val]
-					 				console.log(resp["speech"])
-					 				resp["speech"].push(answer);	
-					 			} 			
-					 		}
-					 	});
-					 	delete que_params["id"] 
-					 	console.log(que_params['responses'][0]['messages'])
-					 	var user_says = {	"count": 0,
-														  "data": [
-														    {
-														      "text": que
-														    }
-														  ],
-														  "isTemplate": false,
-														  "isAuto": false
-														}
-						que_params['userSays'].push(user_says)
-					 	console.log(que_params['userSays'])
-						var query_str = 'https://api.dialogflow.com/v1/intents/' + intent + '?v=20150910'
-						console.log(query_str)
-						unirest.put(query_str)
-						.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-						.send(que_params)
-						.end(function (response) {
-							res.render('index', {title: 'My Training Module', req: req})
-						});
-					});
+		 			var full_intent = intent.split('=')
+		 			var question = {
+						question: req.sanitize('question').escape().trim(),
+						answer: req.sanitize('answer').escape().trim(),
+						intent_id: full_intent[0],
+						intent: full_intent[1],
+						predefined_intent: true
+					}
+		 			req.getConnection(function(error, conn) {
+						conn.query('INSERT INTO questions SET ?', question, function(err, result) {
+							console.log("adfradsfsadfads")
+							console.log(result)
+							if (err) {
+								req.flash('error', err)
+								res.render('questions/add', {
+									title: 'Add New Question',
+									question: question.question,
+									req : req,
+									answer: question.answer
+								})
+							} else {				
+								req.flash('success', "Data added successfully")
+								res.render('index', {title: 'My Training Module', req: req})					
+							}
+						})
+					})					
 				}else{
 					var question = {
 						question: req.sanitize('question').escape().trim(),
@@ -300,7 +304,6 @@ app.post('/add', function(req, res, next){
 				unirest.get('https://api.dialogflow.com/v1/intents/'+ in_id +'?v=20150910')
 				.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
 				.end(function (result){
-					console.log(result);
 					var res_obj = JSON.stringify(result.body);
 					let res_hash = [];
 					var res_int_id = result.body["id"]
@@ -323,18 +326,32 @@ app.post('/add', function(req, res, next){
 				});
 			}
 		});  		
-	}	else {   
-		var error_msg = ''
-		errors.forEach(function(error) {
-			error_msg += error.msg + '<br>'
-		})				
-		req.flash('error', error_msg)		
-		res.render('questions/add', { 
-	    title: 'Add New question',
-	    req: req,
-	    question: req.body.question,
-	    answer: req.body.answer
-	  })
+	}	else {  
+		var query_str = 'https://api.dialogflow.com/v1/intents?v=20150910'
+		unirest.get(query_str)
+		.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+		.end(function (response) {
+			var intent_res = response.body
+			var all_intents = new Array();
+			intent_res.forEach(function(value, key){
+	    	all_intents.push({ 
+	        id: intent_res[key]["id"], 
+	        name: intent_res[key]["name"]
+	    	}); 
+			})
+			var error_msg = ''
+			errors.forEach(function(error) {
+				error_msg += error.msg + '<br>'
+			})				
+			req.flash('error', error_msg)		
+			res.render('questions/add', { 
+		    title: 'Add New question',
+		    req: req,
+		    question: req.body.question,
+		    answer: req.body.answer,
+		    intent_details: all_intents
+		  })
+		});		
   }
 })
 
