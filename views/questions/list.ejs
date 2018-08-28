@@ -45,10 +45,13 @@
 							<input type="text" class="form-control new_int-" name="intent" id="intent-<%= question.id%>" value="<%= question.intent %>" disabled/>
 						 <% } else{ %>  
 						  <input type="text" class="form-control new_int-" name="intent" id="intent-<%= question.id%>"/>
-						<% } %>		
-						
+						<% } %>							
 					</td>
-					<td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button></td>
+					<% if(req.session.user[0].user_role == "Change Manager"){ %>
+						<td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button></td>
+					 <% } else{ %>  
+					  <td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>" disabled>Create Intent</button></td>
+					<% } %>											
 				</tr>
 			<% }) %>
 		<% } %>

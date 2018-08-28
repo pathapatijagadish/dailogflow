@@ -30,7 +30,6 @@ app.get('/', authentication_mdl.is_login, function(req, res, next) {
 			        name: intent_res[key]["name"]
 			    	}); 
 					})
-					console.log(all_intents)
 					res.render('questions/list', {
 						intent_details: all_intents,
 						req: req,
@@ -290,7 +289,8 @@ app.post('/add', function(req, res, next){
 						answer: req.sanitize('answer').escape().trim(),
 						intent_id: full_intent[0],
 						intent: full_intent[1],
-						predefined_intent: true
+						predefined_intent: true,
+						is_active: true
 					}
 					console.log("******************")
 					console.log(question)
@@ -315,7 +315,8 @@ app.post('/add', function(req, res, next){
 				}else{
 					var question = {
 						question: req.sanitize('question').escape().trim(),
-						answer: req.sanitize('answer').escape().trim()
+						answer: req.sanitize('answer').escape().trim(),
+						is_active: true
 					}
 					req.getConnection(function(error, conn) {
 						conn.query('INSERT INTO questions SET ?', question, function(err, result) {
