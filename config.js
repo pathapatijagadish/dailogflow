@@ -1,8 +1,8 @@
 var config = {
 	database: {
-		host:	  '172.16.1.110', 	// database host
+		host:	  'localhost', 	// database host
 		user: 	  'root', 		// your database username
-		password: 'G@ecis11a', 		// your database password
+		password: '', 		// your database password
 		port: 	  3306, 		// default MySQL port
 		db: 	  'test_one' 		// your database name
 	},
@@ -13,4 +13,3 @@ var config = {
 }
 
 module.exports = config
-

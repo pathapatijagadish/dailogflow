@@ -11,7 +11,7 @@ var session_store;
 app.get('/', authentication_mdl.is_login, function(req, res, next) {
 	console.log("questions")
 	req.getConnection(function(error, conn) {
-		conn.query('SELECT * FROM questions WHERE intent is null ORDER BY id DESC',function(err, rows, fields) {
+		conn.query('SELECT * FROM questions where is_active = 1 ORDER BY id DESC',function(err, rows, fields) {
 			if (err) {
 				req.flash('error', err)
 				res.render('index', {
@@ -96,21 +96,62 @@ app.post('/add_response', function(req, res) {
 })
 
 
-// SHOW INTENT CREATION
+// Here we are creating new intent and updating existing intent
 app.post('/add/intent', function(req, res){	
-		var params = JSON.stringify(req.body);
-    var que_params = JSON.parse(params);
-    var que_id = que_params['que_id']
-    var que_intent = que_params['intent']
-    console.log(req.body);
-    req.getConnection(function(error, conn) {
-    sql = 'select * from questions where id = ?'
+	var params = JSON.stringify(req.body);
+  var que_params = JSON.parse(params);
+  var que_id = que_params['que_id']
+  var que_intent = que_params['intent']
+  var intent_id = que_params['intent_id']
+	// Here we are creating new intent
+  req.getConnection(function(error, conn) {
+  	sql = 'select * from questions where id = ?'
 		conn.query(sql, que_id,function(err, rows, fields) {
 			var id = rows[0].id;
 			var question = rows[0].question;
-			var answer = rows[0].answer;				
-			conn.query('select * from sub_questions where question_id = ?', que_id, function(error,sub_queries,values){
-				sub_que = [
+			var answer = rows[0].answer;	
+			if (intent_id) {
+				// Here we are updating existing intent
+				unirest.get('https://api.dialogflow.com/v1/intents/'+ intent_id +'?v=20150910')
+				.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+				.end(function (result){
+				  var que_params = result.body
+				  que_params['responses'][0]['messages'].forEach(function(resp){
+				    if (resp["speech"]){
+		          if (Array.isArray(resp["speech"])) {
+		            resp["speech"].push(answer);    
+		          } else {
+		            var val = resp["speech"]
+		            resp["speech"] = [val]
+		            resp["speech"].push(answer);    
+		          }                       
+				    }
+				  });
+				  delete que_params["id"]
+				  var user_says = {       
+		        "count": 0,
+		        "data": [
+		        	{
+		            "text": question
+		          }
+		        ],
+		        "isTemplate": false,
+		        "isAuto": false
+					}
+				  que_params['userSays'].push(user_says)
+				  var query_str = 'https://api.dialogflow.com/v1/intents/' + intent_id + '?v=20150910'
+				 	unirest.put(query_str)
+				  .headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3','Content-Type': 'application/json'})
+				  .send(que_params)
+				  .end(function (response) {
+				    conn.query('UPDATE questions SET intent = ?, intent_id = ?, is_active = ? WHERE id= ? ', [ que_intent, intent_id, 0, que_id ], function(err, user) {
+							res.send(user);
+						});
+				  });
+				});
+			} else {
+				conn.query('select * from sub_questions where question_id = ?', que_id, function(error,sub_queries,values){
+					sub_que = [
 										{
 								  		"count": 0,
 								  		"data": [
@@ -123,51 +164,52 @@ app.post('/add/intent', function(req, res){
 								  		]
 										}
 									]
-				sub_queries.forEach(function(k,v){
-					sub_que.push({						
-						"count": 0,
-						"data": [
-							{
-								"text": sub_queries[v].question
-							},
-							{
-								"userDefined": true
-							}
-						]
+					sub_queries.forEach(function(k,v){
+						sub_que.push({						
+							"count": 0,
+							"data": [
+								{
+									"text": sub_queries[v].question
+								},
+								{
+									"userDefined": true
+								}
+							]
+						});
+					})
+					var intent_data = 	{
+						  									"contexts": [],
+																"events": [],
+																"fallbackIntent": false,
+																"name": que_intent,
+																"priority": 500000,
+																"responses": [
+																	{
+															  		"defaultResponsePlatforms": {
+															    		"google": true
+															  		},
+															  		"messages": [
+															    		{
+															      		"speech": answer,
+															      		"type": 0
+															    		}
+															  		]
+																	}
+																],
+																"userSays": sub_que,
+																"webhookForSlotFilling": false,
+																"webhookUsed": false
+															}
+					unirest.post('https://api.dialogflow.com/v1/intents?v=20150910')
+					.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+					.send(intent_data)
+					.end(function (response) {
+						conn.query('UPDATE questions SET intent = ?, intent_id = ?, is_active =? WHERE id= ? ', [ que_intent, response.body['id'], 0, que_id ], function(err, user) {
+							res.send(user);
+						});
 					});
-				})
-				var intent_data = 	{
-					  									"contexts": [],
-															"events": [],
-															"fallbackIntent": false,
-															"name": que_intent,
-															"priority": 500000,
-															"responses": [
-																{
-														  		"defaultResponsePlatforms": {
-														    		"google": true
-														  		},
-														  		"messages": [
-														    		{
-														      		"speech": answer,
-														      		"type": 0
-														    		}
-														  		]
-																}
-															],
-															"userSays": sub_que,
-															"webhookForSlotFilling": false,
-															"webhookUsed": false
-														}
-				unirest.post('https://api.dialogflow.com/v1/intents?v=20150910')
-				.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-				.send(intent_data)
-				.end(function (response) {
-					conn.query('UPDATE questions SET intent = ?, intent_id = ? WHERE id= ? ', [ que_intent, response.body['id'], que_id ], function(err, user) {
-						res.send(user);
-					});
-				});
-			})
+				});					
+			}
 		})
 	})
 })
@@ -228,7 +270,6 @@ app.post('/add', function(req, res, next){
 	req.assert('question', 'Query is required').notEmpty()
 	req.assert('answer', 'Response is required').notEmpty()
 	var errors = req.validationErrors()
-	console.log(errors);
   if( !errors ) { 
   	let query_condition = ""
   	var que = req.body.question
@@ -241,7 +282,6 @@ app.post('/add', function(req, res, next){
 		 	var query_condition = response.body["result"]["action"]
 		 	var in_id = response.body["result"]["metadata"]["intentId"]
 		 	if(query_condition == "input.unknown"){
-				console.log("===============");
 		 		console.log(intent);
 		 		if (intent) {
 		 			var full_intent = intent.split('=')
@@ -252,10 +292,12 @@ app.post('/add', function(req, res, next){
 						intent: full_intent[1],
 						predefined_intent: true
 					}
+					console.log("******************")
+					console.log(question)
 		 			req.getConnection(function(error, conn) {
 						conn.query('INSERT INTO questions SET ?', question, function(err, result) {
 							console.log("adfradsfsadfads")
-							console.log(result)
+							console.log(err)
 							if (err) {
 								req.flash('error', err)
 								res.render('questions/add', {

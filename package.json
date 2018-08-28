@@ -29,5 +29,14 @@
     "nodemon": "^1.18.3",
     "underscore": "^1.9.1",
     "unirest": "^0.5.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pjagadish/dailogflow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pjagadish/dailogflow/issues"
+  },
+  "homepage": "https://github.com/pjagadish/dailogflow#readme"
 }

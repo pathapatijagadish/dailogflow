@@ -14,11 +14,9 @@
 		<tr>
      	<th scope="col">Query</th>
 	  	<th scope="col">Response</th>
-	  	<% if(req.session.user[0].user_role = "Change Manager"){ %>
-     		<th scope="col">If Existing Intent</th>
-     		<th scope="col">If New Intent</th>
-	  		<th scope="col">Action</th>
-	  	<% } %>
+   		<th scope="col">If Existing Intent</th>
+   		<th scope="col">If New Intent</th>
+  		<th scope="col">Action</th>
 	  </tr>
   </thead>
 	<tbody>
@@ -28,29 +26,29 @@
 					<span><input type="hidden" name="que_id" id="que_id" value="<%= question.id%>"></span>
 					<td><%= question.question %></td>
 					<td><%= question.answer %></td>
-					<% if(question.intent){ %>
-	   				<td>
-	   					<div class="form-group">
-  							<input type="text" class="form-control" name="intent" id="intent" value="<%= question.intent%>" disabled/>
-							</div>
-	   				</td>
-						<td><button  class="btn btn-info" type="button" disabled>Created</button></td>
-	 				<% } else if (req.session.user[0].user_role = "Change Manager") { %>  
-						<td>
-			    		<select class="selectpicker" name="intent" id="select_int">  
-				      	<ul>
-					        <option value="">Select Intent</option>
-					        <% intent_details.forEach((intent) => { %>
-					         <option value="<%= intent["id"]%>"><%= intent["name"] %></option>
-					        <% }) %>
-					      </ul>
-			    		</select>
-	   				</td>
-	   				<td>
- 							<input type="text" class="form-control new_int-" name="intent" id="intent-<%= question.id%>"/>
-						</td>
-						<td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button></td>
-					<% } %>
+					<td>
+		    		<select class="selectpicker" name="intent" id="select_int-<%= question.id%>">  
+			      	<ul>
+				        <option value="">Select Intent</option>
+				        <% intent_details.forEach((intent) => { %>
+				         	<% if( intent["name"] == question.intent){ %>
+									  <option value="<%= intent["id"]%>" selected="selected"><%= intent["name"] %></option>
+									 <% } else{ %>  
+									    <option value="<%= intent["id"]%>"><%= intent["name"] %></option>
+									<% } %>				         
+				        <% }) %>
+				      </ul>
+		    		</select>
+   				</td>
+   				<td>
+   					<% if(question.intent){ %>
+							<input type="text" class="form-control new_int-" name="intent" id="intent-<%= question.id%>" value="<%= question.intent %>" disabled/>
+						 <% } else{ %>  
+						  <input type="text" class="form-control new_int-" name="intent" id="intent-<%= question.id%>"/>
+						<% } %>		
+						
+					</td>
+					<td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button></td>
 				</tr>
 			<% }) %>
 		<% } %>
@@ -64,30 +62,28 @@ $(document).ready(function(){
 	$("button").on("click", function () {
 		var que_id = $(this).attr('id');
 		var intent = $('#intent-'+ que_id).val();
-		var sel_int = $('#select_int :selected').text();
-		var sel_int_id = $('#select_int').val();
-		if (sel_int_id.length && intent.length ) {
-			alert("select either new or existing intent only");
-		} else {
-			$.ajax({
-		    url : 'questions/add/intent',
-		    type : 'POST',
-		    data : {
-		        'intent' : intent,
-		        'que_id' :	que_id,
-		        'intent_id' : sel_int_id
-		    },
-		    success : function(data) {              
-		      alert("Successfully Intent Created");
-		      window.location.reload();
-		    },
-		    error : function(request,error)
-		    {
-		    	console.log("error");
-		      alert("Something went wrong");
-		    }
-			});
-		}
+		var sel_int =$("#select_int-"+ que_id +" :selected").text();
+		var sel_int_id = $('#select_int-'+ que_id).val();
+		$.ajax({
+	    url : 'questions/add/intent',
+	    type : 'POST',
+	    data : {
+	        'intent' : intent,
+	        'que_id' :	que_id,
+	        'intent_id' : sel_int_id
+	    },
+	    success : function(data) {              
+	      alert("Successfully Intent Created");
+	      window.location.reload();
+	    },
+	    error : function(request,error)
+	    {
+	    	console.log("error");
+	      alert("Something went wrong");
+	    }
+		});
 	});
 });
 </script>
+
+
