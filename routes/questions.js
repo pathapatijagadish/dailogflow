@@ -244,14 +244,15 @@ app.post('/add_question', function(req, res, next){
 		var question_id = post.question_id;
 		var qry = post.question[a];
 		var answer = post.answer[a];
-		var final_que = [question_id, qry, answer]
+		var action = post.actions[a];
+		var final_que = [question_id, qry, answer, action]
 		context_que.push(final_que)		
 	}
 
 	console.log(context_que);
 
 	req.getConnection(function(error, conn) {
-		var sql2 = "INSERT INTO context_questions (question_id, question, answer) VALUES ? ";
+		var sql2 = "INSERT INTO context_questions (question_id, question, answer, action_name) VALUES ? ";
 		conn.query(sql2,[context_que], function(err, result) {
 			if (err) {
 				console.log(error)

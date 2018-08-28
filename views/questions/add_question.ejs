@@ -25,7 +25,7 @@
                 <div class="input-group control-group col-sm-12 " style=" margin-bottom:30px;">  
                   <input type="text" name="question[0]" class="form-control" placeholder="Add Question" style=" margin-bottom:10px ">
                   <input type="text" name="answer[0]" class="form-control" placeholder="Add Answer">
-              
+                  <input type="text" name="actions[0]" class="form-control" placeholder="Add context action" style=" margin-bottom:10px ">
                 </div> 
                </div>
             </div><br/>
@@ -45,7 +45,7 @@
     $(document).ready(function() {
           var next = 1;
           $(".add-more").click(function(e){
-              var fieldHTML = '<div id="button_'+ next +'"> <div class="input-group control-group"><input type="text" name="question[' + next + ']"  class="form-control" placeholder="Add Question" style=" margin-bottom:10px "><input type="text" name="answer[' + next + ']"  class="form-control" placeholder="Add Answer" style=" margin-bottom:10px "> <div class="input-group-btn"> <button id="button_' + next + '" class="btn btn-danger btn-sm remove-more" type="button" style="margin-left:0px;">-</button> </div></div></div>';
+              var fieldHTML = '<div id="button_'+ next +'"> <div class="input-group control-group"><input type="text" name="question[' + next + ']"  class="form-control" placeholder="Add Question" style=""><input type="text" name="answer[' + next + ']"  class="form-control" placeholder="Add Answer" style=" margin-bottom:10px "><input type="text" name="actions[' + next + ']"  class="form-control" placeholder="action name" style=" margin-bottom:10px "> <div class="input-group-btn"> <button id="button_' + next + '" class="btn btn-danger btn-sm remove-more" type="button" style="margin-left:0px;">-</button> </div></div></div>';
               $('.after-add-more').append(fieldHTML)
               next +=1;
               $(".remove-more").click(function(e){
