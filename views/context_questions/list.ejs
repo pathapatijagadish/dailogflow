@@ -1,0 +1,106 @@
+<%- include ../layouts/header.ejs %>
+<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
+
+<% if (messages.error) { %>
+	<p style="color:red"><%- messages.error %></p>
+<% } %>
+
+<% if (messages.success) { %>
+	<p style="color:green"><%- messages.success %></p>
+<% } %>	
+
+<% for(var key in result) { %>
+	<div class="container-fluid main_container">
+		<div> Question: <%= key %></div>
+		<div> Response: <%= result[key][0].main_ans %> </div>
+		<div class="intent_div">
+			<input type="text" id="message" class="form-control" name="fname" value="<%= result[key][0].intent %>" disabled>
+		</div>
+		<div>Context Name</div>	
+		<div class="Q&A_TABLE row" style="margin-right:3px;margin-left:3px;">
+			<div class="question col-sm-4"><span class="title">Context Query</span></div>
+			<div class="Rsponse col-sm-4"><span class="title">Context Response</span></div>
+			<div class="Answer col-sm-4""><span class="title">Action</span></div>
+			<% for(var i=1; i < result[key].length; i++) { %>
+				<div class="question col-sm-4"><%= result[key][i].que %></div>
+				<div class="Rsponse col-sm-4"><%= result[key][i].ans %> </div>
+				<div class="Answer col-sm-4"><%= result[key][i].action_name %> </div>
+	 		<% } %>
+		</div>
+	 	<div class="btn_cls">
+		 	<% if (result[key][0].intent) { %>
+				<button type="button"  id="ctxt-<%= result[key][0].question_id %>" class="btn btn-primary btn-sm sendButton">Submit</button>
+			<% } else { %>	
+				<button type="button" disabled="disable" class="btn btn-primary btn-sm sendButton">Submit</button>
+			<% } %>
+	 	</div>
+	</div>
+<% } %>
+
+<%- include ../layouts/footer.ejs %>
+
+<script>
+$(document).ready(function(){
+	$(".sendButton").click(function(){
+    var que_id = $(this).attr('id').split('-');
+    alert(que_id)
+    $.ajax({
+	    url : 'context_questions/update_context',
+	    type : 'POST',
+	    data : {
+	      'question_id' : que_id[1]
+	    },
+	    success : function(data) {              
+	      alert("Successfully Intent Created");
+	      window.location.reload();
+	    },
+	    error : function(request,error)
+	    {
+	    	console.log("error");
+	      alert("Something went wrong");
+	    }
+		});
+  });    
+});
+</script>
+
+<style>
+.title{
+	font-weight:bold;
+}
+.question{
+	height:30px; 
+	border:1px solid #ccc; 
+	padding-right:0px;	
+}
+.Rsponse{
+	height:30px; 
+	border:1px solid #ccc; 
+	padding-right:0px;
+}
+.Answer{
+	height:30px; 
+	border:1px solid #ccc; 
+}
+.btn_cls{
+	margin-top:5px; 
+	text-align:right;
+}
+.Q&A_TABLE{
+	margin-right:3px; 
+	margin-left:3px;
+}
+.main_container{
+	background-color:#f7f4f4; 
+	padding-top:10px; 
+	padding-bottom:10px; 
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+.intent_div{
+	margin-top:5px; 
+	margin-bottom:5px; 
+	width:30%
+}
+</style>

@@ -40,6 +40,7 @@ app.set('view engine', 'ejs')
 var index = require('./routes/index')
 var users = require('./routes/users')
 var questions = require('./routes/questions')
+var context_questions = require('./routes/context_questions')
 
 
 /**
@@ -110,6 +111,7 @@ app.use(flash())
 app.use('/', index)
 app.use('/users', users)
 app.use('/questions', questions)
+app.use('/context_questions', context_questions)
 
 app.listen(3000, function(){
 	console.log('Server running at port 3000: http://127.0.0.1:3000')
