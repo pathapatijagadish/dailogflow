@@ -1,8 +1,10 @@
 var express = require('express')
 var app = express()
+var authentication_mdl = require('../middlewares/authentication');
 
-app.get('/', function(req, res) {
+app.get('/', authentication_mdl.is_login, function(req, res) {
 	// render to views/index.ejs template file
+	console.log(req.session.user);
 	res.render('index', {title: 'My Training Module', req: req })
 })
 

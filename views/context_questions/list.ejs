@@ -10,16 +10,22 @@
 <% } %>	
 
 <% for(var key in result) { %>
-	<div class="container-fluid main_container">
-		<div> Question: <%= key %></div>
+	<div class="container-fluid main_container" style="margin-top:5px;">
+		<div> Phrase: <%= key %></div>
 		<div> Response: <%= result[key][0].main_ans %> </div>
 		<div class="intent_div">
-			<input type="text" id="message" class="form-control" name="fname" value="<%= result[key][0].intent %>" disabled>
+			<% if (result[key][0].intent) { %>
+				<% intent_val = result[key][0].intent %>
+				<input type="text" id="message" class="form-control" name="fname" value="<%= result[key][0].intent %>" disabled>
+			<% } else { %>	
+				<input type="text" id="message" class="form-control" name="fname" value=""No intent available" disabled>
+				<a href="/questions">Training Phrases</a>
+			<% } %>
 		</div>
-		<div>Context Name</div>	
+		<div>Context Details</div>	
 		<div class="Q&A_TABLE row" style="margin-right:3px;margin-left:3px;">
-			<div class="question col-sm-4"><span class="title">Context Query</span></div>
-			<div class="Rsponse col-sm-4"><span class="title">Context Response</span></div>
+			<div class="question col-sm-4"><span class="title">Input Context</span></div>
+			<div class="Rsponse col-sm-4"><span class="title">Output Context</span></div>
 			<div class="Answer col-sm-4""><span class="title">Action</span></div>
 			<% for(var i=1; i < result[key].length; i++) { %>
 				<div class="question col-sm-4"><%= result[key][i].que %></div>

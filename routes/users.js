@@ -41,10 +41,12 @@ app.post('/signin', function(req, res, next){
 					})
 				} else {
 					req.session.user = user;
-					req.flash('success', 'Data added successfully!')
 					
-					// render to views/user/add.ejs
-					return res.redirect('/');
+					if (req.session.user[0].user_role == "SME") {
+						return res.redirect('/questions/add');						
+					} else {
+						return res.redirect('/questions');
+					}
 				}
     });
 	})

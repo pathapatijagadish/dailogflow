@@ -42,7 +42,7 @@ app.get('/', authentication_mdl.is_login, function(req, res, next) {
 })
 
 // SHOW ADD QUESTION FORM
-app.get('/add', function(req, res, next){	
+app.get('/add', authentication_mdl.is_login, function(req, res, next){	
 	var query_str = 'https://api.dialogflow.com/v1/intents?v=20150910'
 	unirest.get(query_str)
 	.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
@@ -245,14 +245,14 @@ app.post('/add_question', function(req, res, next){
 		var qry = post.question[a];
 		var answer = post.answer[a];
 		var action = post.actions[a];
-		var final_que = [question_id, qry, answer, action]
+		var final_que = [question_id, qry, answer, action, true]
 		context_que.push(final_que)		
 	}
 
 	console.log(context_que);
 
 	req.getConnection(function(error, conn) {
-		var sql2 = "INSERT INTO context_questions (question_id, question, answer, action_name) VALUES ? ";
+		var sql2 = "INSERT INTO context_questions (question_id, question, answer, action_name, is_active) VALUES ? ";
 		conn.query(sql2,[context_que], function(err, result) {
 			if (err) {
 				console.log(error)

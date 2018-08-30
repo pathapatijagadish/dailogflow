@@ -3,6 +3,9 @@ var app = express()
 
 var mysql = require('mysql')
 
+var server = app.listen();
+server.setTimeout(500000);
+
 /**
  * This middleware provides a consistent API 
  * for MySQL connections during request/response life cycle

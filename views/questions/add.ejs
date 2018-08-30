@@ -9,12 +9,12 @@
 <% } %>
 
 <div class="page-header">
-  <h4>New Query Form</h4>      
+  <h4>New Training Form</h4>      
 </div>
 
 <form action="/questions/add" method="POST">
   <div class="form-group">
-    <label for="email">Query:</label>
+    <label for="email">Training Phrase:</label>
     <input type="text" class="form-control" name="question" id="question" />
   </div>
   <div class="form-group">
@@ -25,7 +25,7 @@
   <div class="form-check">
     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
     <label class="form-check-label" for="defaultCheck1">
-      Add this query to existing intent
+      Add this training phrase to existing intent
     </label>
   </div>
 
@@ -33,7 +33,7 @@
 
     <select class="selectpicker" name="intent">  
       <ul>
-        <option value="">Select Intent</option>
+        <option value="">Select Existing Intent</option>
         <% intent_details.forEach((intent) => { %>
          <option value="<%= intent["id"]%>=<%= intent["name"] %>"><%= intent["name"] %></option>
         <% }) %>
