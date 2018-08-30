@@ -30,7 +30,7 @@ app.post('/update_context', function(req, res, next) {
 	var question_id = req.body.question_id
 	console.log(question_id)
 	req.getConnection(function(error, conn) {
-		sql = 'UPDATE context_questions SET is_active = 0 WHERE id= ? '
+		sql = 'UPDATE context_questions SET is_active = 0 WHERE question_id= ? '
 		conn.query(sql, [question_id], function(err, rows, fields) {
 			console.log(fields)
 			if (err) {
