@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 28, 2018 at 12:43 PM
+-- Generation Time: Aug 30, 2018 at 04:13 PM
 -- Server version: 10.1.32-MariaDB
 -- PHP Version: 5.6.36
 
@@ -32,33 +32,43 @@ CREATE TABLE `context_questions` (
   `id` int(6) UNSIGNED NOT NULL,
   `question_id` int(6) DEFAULT NULL,
   `question` varchar(100) NOT NULL,
-  `answer` varchar(100) NOT NULL
+  `answer` varchar(100) NOT NULL,
+  `action_name` varchar(100) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `context_questions`
 --
 
-INSERT INTO `context_questions` (`id`, `question_id`, `question`, `answer`) VALUES
-(1, 4, 'CQ1', 'CA1'),
-(2, 4, 'CQ2', 'CA2'),
-(3, 4, 'CQ3', 'CA3'),
-(4, 17, 'tgutyuy', 'utututyu'),
-(5, 17, 'hjkjhkhkjh', 'tutyutuytu'),
-(6, 17, 'tgutyuy', 'utututyu'),
-(7, 17, 'hjkjhkhkjh', 'tutyutuytu'),
-(8, 21, 'sdaffsd', 'ghkkk'),
-(9, 21, 'trytryry', 'rytrytrytry'),
-(10, 21, 'rytrytrytry', 'rytrytrytrytrytry'),
-(11, 22, 'ergertetert', 'utututyu'),
-(12, 22, 'tetertert', 'yrtytrytrytrytryr'),
-(13, 43, '', ''),
-(14, 44, '', ''),
-(15, 46, '', ''),
-(16, 49, 'has_one ', 'for single relation'),
-(17, 49, 'many-many', 'has_many'),
-(18, 51, '', ''),
-(19, 55, 'i want to learn sql', 'here the document');
+INSERT INTO `context_questions` (`id`, `question_id`, `question`, `answer`, `action_name`, `is_active`) VALUES
+(1, 4, 'CQ1', 'CA1', NULL, NULL),
+(2, 4, 'CQ2', 'CA2', NULL, NULL),
+(3, 4, 'CQ3', 'CA3', NULL, NULL),
+(4, 17, 'tgutyuy', 'utututyu', NULL, NULL),
+(5, 17, 'hjkjhkhkjh', 'tutyutuytu', NULL, NULL),
+(6, 17, 'tgutyuy', 'utututyu', NULL, NULL),
+(7, 17, 'hjkjhkhkjh', 'tutyutuytu', NULL, NULL),
+(8, 21, 'sdaffsd', 'ghkkk', NULL, NULL),
+(9, 21, 'trytryry', 'rytrytrytry', NULL, NULL),
+(10, 21, 'rytrytrytry', 'rytrytrytrytrytry', NULL, NULL),
+(11, 22, 'ergertetert', 'utututyu', NULL, NULL),
+(12, 22, 'tetertert', 'yrtytrytrytrytryr', NULL, NULL),
+(13, 43, '', '', NULL, NULL),
+(14, 44, '', '', NULL, NULL),
+(15, 46, '', '', NULL, NULL),
+(16, 49, 'has_one ', 'for single relation', NULL, NULL),
+(17, 49, 'many-many', 'has_many', NULL, NULL),
+(18, 51, '', '', NULL, NULL),
+(19, 55, 'i want to learn sql', 'here the document', NULL, 0),
+(20, 64, 'i want to learn sqlsd', 'here the sdocument', '', 0),
+(21, 64, 'i need blog template', 'ok i will send', 'send mail', 0),
+(22, 72, 'where ru working ', 'i am working with genpact', '', 1),
+(23, 72, 'please send your details', 'ok i will send', 'send mail', 1),
+(24, 73, 'context_q1', 'context_a1', '', 1),
+(25, 73, 'context_q2', 'context_a2', 'call', 1),
+(26, 75, 'sdafadf', 'sdfadsfads', '', 1),
+(27, 75, 'adfsadfa', 'adsfsadfa', '', 1);
 
 -- --------------------------------------------------------
 
@@ -135,7 +145,27 @@ INSERT INTO `questions` (`id`, `question`, `answer`, `intent`, `intent_id`, `pre
 (52, 'is rails is mvc', 'yes rails is mvc architecture', 'RailsIntent', NULL, 1, 1),
 (53, 'who is matz', 'matz is ruby founder', 'GaneralKnowledge', '38cfc25e-6e7e-47dc-84e3-0b980aeb391b', 1, 0),
 (54, 'ORM', 'object relational maping', 'RailsIntent', 'bc7c5baa-0501-4ba2-9e87-1193bca06213', 1, 0),
-(55, 'what is SQL', 'structured query languge', 'SQLintent', 'd1332660-044f-46fb-92e4-8e5b3c3a2164', NULL, 0);
+(55, 'what is SQL', 'structured query languge', 'SQLintent', 'd1332660-044f-46fb-92e4-8e5b3c3a2164', NULL, 0),
+(56, 'what is the design patterens', 'jquery is client side languate', NULL, NULL, NULL, 1),
+(57, 'what is the design patterens', 'jquery is client side languate', NULL, NULL, NULL, 1),
+(58, 'what is the design patterens', 'jquery is client side languate', NULL, NULL, NULL, 1),
+(59, 'what is the design patterens', 'jquery is client side languate', NULL, NULL, NULL, 1),
+(60, 'what is the design patterens', 'jquery is client side languate', NULL, NULL, NULL, 1),
+(61, 'where is kashmir', 'kashmir is located in jammu', NULL, NULL, NULL, 1),
+(62, 'where is kashmir', 'kashmir is located in jammu', NULL, NULL, NULL, 1),
+(63, 'what is context test', 'context test checking', NULL, NULL, NULL, 1),
+(64, 'what is context test', 'context test checking', 'ContextIntent', 'e2bef10d-f153-4850-9894-a82601b1c3bc', NULL, 0),
+(65, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(66, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(67, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(68, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(69, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(70, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(71, 'what is your name', 'my name is gina', NULL, NULL, NULL, 1),
+(72, 'what is your name', 'my name is gina', 'SelfDetailIntent', '6a3373f0-07f3-4901-b13d-c0fbd146897e', NULL, 0),
+(73, 'who is the genpact founder', 'tiger', NULL, NULL, NULL, 1),
+(74, 'founder ge', 'tyagarajan', 'GaneralKnowledge', '41512df2-b4f0-4fb3-866d-1a0060226bf2', 1, 1),
+(75, 'tell me the shortest way to chennai', 'ljdfklmadf', NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -197,7 +227,49 @@ INSERT INTO `sub_questions` (`id`, `question_id`, `question`) VALUES
 (41, 55, 'query language'),
 (42, 55, 'query'),
 (43, 55, 'sql language'),
-(44, 55, 'database language');
+(44, 55, 'database language'),
+(45, 61, 'dsafadsfad'),
+(46, 61, 'dsafadsfad'),
+(47, 61, 'dsafadsfad'),
+(48, 61, 'dsafadsfad'),
+(49, 61, 'dsafadsfad'),
+(50, 61, 'dsafadsfad'),
+(51, 61, 'dsafadsfad'),
+(52, 61, 'test1'),
+(53, 61, 'test1'),
+(54, 61, 'test1'),
+(55, 61, 'test1'),
+(56, 61, 'test11'),
+(57, 61, 'test11'),
+(58, 61, 'test12'),
+(59, 61, 'test13'),
+(60, 61, 'test14'),
+(61, 61, 'test11'),
+(62, 61, 'test12'),
+(63, 61, 'test13'),
+(64, 61, 'test14'),
+(65, 61, 'test111'),
+(66, 61, 'test111'),
+(67, 61, 'test111'),
+(68, 61, 'test122'),
+(69, 61, 'test134'),
+(70, 61, 'test145'),
+(71, 63, 'context'),
+(72, 63, 'test'),
+(73, 63, 'context test'),
+(74, 63, 'test context'),
+(75, 72, 'tell me about yoursef'),
+(76, 72, 'tell about yourself'),
+(77, 72, 'yourself'),
+(78, 72, 'about your self'),
+(79, 73, 'genpact ceo'),
+(80, 73, 'founder of genpact'),
+(81, 73, 'genpact owner'),
+(82, 73, 'genpact head'),
+(83, 75, 'adfsadfsad'),
+(84, 75, 'dsafsadfdsf'),
+(85, 75, 'adfadfdf'),
+(86, 75, 'dsfadfsad');
 
 -- --------------------------------------------------------
 
@@ -258,19 +330,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `context_questions`
 --
 ALTER TABLE `context_questions`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `sub_questions`
 --
 ALTER TABLE `sub_questions`
-  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` int(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=87;
 
 --
 -- AUTO_INCREMENT for table `users`
