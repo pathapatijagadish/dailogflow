@@ -283,7 +283,27 @@ app.post('/add_question', function(req, res, next){
 			}				
 		});	
 	});
-	res.render('index', {title: 'My Training Module', req: req})			
+
+	var query_str = 'https://api.dialogflow.com/v1/intents?v=20150910'
+	unirest.get(query_str)
+	.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
+	.end(function (response) {
+		var intent_res = response.body
+		var all_intents = new Array();
+		intent_res.forEach(function(value, key){
+    	all_intents.push({ 
+        id: intent_res[key]["id"], 
+        name: intent_res[key]["name"]
+    	}); 
+		})
+		console.log(all_intents)
+		res.render('questions/add', {
+			intent_details: all_intents,
+			req: req
+		})
+	});
+	
+	// res.render('index', {title: 'My Training Module', req: req})			
 });
 
 
