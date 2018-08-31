@@ -26,7 +26,6 @@ app.get('/',authentication_mdl.is_login, function(req, res, next) {
 	})
 })
 
-
 app.post('/update_context', function(req, res, next) {
 	var question_id = req.body.question_id
 	console.log(question_id)

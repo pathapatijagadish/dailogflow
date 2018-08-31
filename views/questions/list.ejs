@@ -8,11 +8,11 @@
 <% if (messages.success) { %>
 	<p style="color:green"><%- messages.success %></p>
 <% } %>	
-
+<div style="border:1px solid #ccc;">
 <table class="table table-hover">
 	<thead >
-		<tr>
-     	<th scope="col">Phrase</th>
+		<tr style="background-color:#8c9499;color:#fff">
+     	<th scope="col" style="padding-left:10px;">Phrase</th>
 	  	<th scope="col">Response</th>
    		<th scope="col">Select Existing Intent</th>
    		<th scope="col">Enter New Intent</th>
@@ -24,7 +24,16 @@
 			<% data.forEach(function(question){ %>
 				<tr>
 					<span><input type="hidden" name="que_id" id="que_id" value="<%= question.id%>"></span>
-					<td><%= question.question %></td>
+					<td>
+						<div style="font-weight:bold;font-size:14px; padding-left:10px;"><%= question.question %><br/></div>
+						<% if(question.sub_questions.lenght != 0) { %>
+							<ul>
+								<% for(var i=0; i < question.sub_questions.length; i++) { %>
+									<li style="font-size:14px;"><%= question.sub_questions[i] %></li>
+								<% } %>
+							</ul>
+						<% } %>
+					</td>
 					<td><%= question.answer %></td>
 					<td>
 		    		<select class="selectpicker" name="intent" id="select_int-<%= question.id%>">  
@@ -57,6 +66,7 @@
 		<% } %>
 	</tbody>
 </table>
+<div>
 
 <%- include ../layouts/footer.ejs %>
 

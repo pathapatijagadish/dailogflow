@@ -30,11 +30,33 @@ app.get('/', authentication_mdl.is_login, function(req, res, next) {
 			        name: intent_res[key]["name"]
 			    	}); 
 					})
-					res.render('questions/list', {
-						intent_details: all_intents,
-						req: req,
-						data: rows
-					})
+					var promise = new Promise(function (resolve, reject) {
+          								var rowIds = []
+                        	for(var i = 0; i < rows.length;i++){
+                            rowIds.push(rows[i].id)
+                      		}
+                        	conn.query('SELECT * FROM sub_questions where question_id IN (?)', [rowIds], function(err, subrows) {
+                          	resolve(subrows);
+                        	});    
+                    		});
+
+          promise.then(function(subrows) {
+            for(var k=0; k< rows.length; k++){
+              rows[k]["sub_questions"] = []
+              for (var i = 0; i < subrows.length; i++) {
+                if (rows[k].id == subrows[i].question_id) {
+                  rows[k]["sub_questions"].push(subrows[i].question)
+                }
+              }
+            }
+            res.render('questions/list', {
+							intent_details: all_intents,
+							req: req,
+							data: rows
+						});
+          }, function(errorResponse) {
+            console.log(test + ' No it failed');
+      		});					
 				});		
 			}
 		})
