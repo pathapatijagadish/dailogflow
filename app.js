@@ -102,11 +102,11 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
 app.use(cookieParser('keyboard cat'))
-app.use(session({ 
+.use(session({ 
 	secret: 'keyboard cat',
 	resave: false,
 	saveUninitialized: true,
-	cookie: { maxAge: 60000 }
+	cookie: { maxAge: 6000000 }
 }))
 app.use(flash())
 

@@ -1,8 +1,5 @@
 var express = require('express')
 var app = express()
-// var Client = require('node-rest-client').Client; 
-// var client = new Client();
-// var querystring = require('querystring');
 var unirest = require('unirest');
 var authentication_mdl = require('../middlewares/authentication');
 var session_store;
@@ -77,7 +74,6 @@ app.get('/add', authentication_mdl.is_login, function(req, res, next){
         name: intent_res[key]["name"]
     	}); 
 		})
-		console.log(all_intents)
 		res.render('questions/add', {
 			intent_details: all_intents,
 			req: req
@@ -93,20 +89,15 @@ app.post('/add_response', function(req, res) {
  	res_obj['responses'][0]['messages'].forEach(function(resp){
  		if (resp["speech"]){
  			if (Array.isArray(resp["speech"])) {
- 				console.log(resp["speech"])
  				resp["speech"].push(query);	
  			} else {
- 				console.log(resp["speech"])
- 				console.log("=============")
  				var val = resp["speech"]
  				resp["speech"] = [val]
- 				console.log(resp["speech"])
  				resp["speech"].push(query);	
  			} 			
  		}
  	});
  	delete res_obj["id"] 
- 	console.log(res_obj)
 	var query_str = 'https://api.dialogflow.com/v1/intents/' + intent_id + '?v=20150910'
 	unirest.put(query_str)
 	.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
@@ -236,10 +227,6 @@ app.post('/add/intent', function(req, res){
 })
 
 
-// app.get('/add_questions/first',function(req, res) {
-// 	res.render('add_questions/add_questions')
-// })
-
 app.post('/add_question', function(req, res, next){	
 	var post  = req.body;
 
@@ -271,8 +258,6 @@ app.post('/add_question', function(req, res, next){
 		context_que.push(final_que)		
 	}
 
-	console.log(context_que);
-
 	req.getConnection(function(error, conn) {
 		var sql2 = "INSERT INTO context_questions (question_id, question, answer, action_name, is_active) VALUES ? ";
 		conn.query(sql2,[context_que], function(err, result) {
@@ -283,27 +268,8 @@ app.post('/add_question', function(req, res, next){
 			}				
 		});	
 	});
-
-	var query_str = 'https://api.dialogflow.com/v1/intents?v=20150910'
-	unirest.get(query_str)
-	.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-	.end(function (response) {
-		var intent_res = response.body
-		var all_intents = new Array();
-		intent_res.forEach(function(value, key){
-    	all_intents.push({ 
-        id: intent_res[key]["id"], 
-        name: intent_res[key]["name"]
-    	}); 
-		})
-		console.log(all_intents)
-		res.render('questions/add', {
-			intent_details: all_intents,
-			req: req
-		})
-	});
-	
-	// res.render('index', {title: 'My Training Module', req: req})			
+	req.flash('success', "intent deatils addeed successfully")		
+	res.redirect('/questions/add');		
 });
 
 
@@ -324,7 +290,6 @@ app.post('/add', function(req, res, next){
 		 	var query_condition = response.body["result"]["action"]
 		 	var in_id = response.body["result"]["metadata"]["intentId"]
 		 	if(query_condition == "input.unknown"){
-		 		console.log(intent);
 		 		if (intent) {
 		 			var full_intent = intent.split('=')
 		 			var question = {
@@ -335,12 +300,8 @@ app.post('/add', function(req, res, next){
 						predefined_intent: true,
 						is_active: true
 					}
-					console.log("******************")
-					console.log(question)
 		 			req.getConnection(function(error, conn) {
 						conn.query('INSERT INTO questions SET ?', question, function(err, result) {
-							console.log("adfradsfsadfads")
-							console.log(err)
 							if (err) {
 								req.flash('error', err)
 								res.render('questions/add', {
@@ -350,8 +311,8 @@ app.post('/add', function(req, res, next){
 									answer: question.answer
 								})
 							} else {				
-								req.flash('success', "Data added successfully")
-								res.render('index', {title: 'My Training Module', req: req})					
+								req.flash('success', "Data added successfully, wait for manager approval")
+								res.redirect('/questions/add');		
 							}
 						})
 					})					
@@ -372,14 +333,14 @@ app.post('/add', function(req, res, next){
 									answer: question.answer
 								})
 							} else {				
-								conn.query("select * from questions where id =?", result.insertId, function(err, user){
+								conn.query("select * from questions where id =?", result.insertId, function(err, result){
 									req.flash('success', "Data added successfully")
 									res.render('questions/add_question', {
 										title: 'Add New Question',
 										req: req,
 										question: '',
 										answer: '',
-										q_id: user
+										q_id: result
 									})							
 								})
 							}
@@ -413,31 +374,12 @@ app.post('/add', function(req, res, next){
 			}
 		});  		
 	}	else {  
-		var query_str = 'https://api.dialogflow.com/v1/intents?v=20150910'
-		unirest.get(query_str)
-		.headers({'Authorization': 'Bearer ab71232a07a24e30a93a1f841d7b11d3', 'Content-Type': 'application/json'})
-		.end(function (response) {
-			var intent_res = response.body
-			var all_intents = new Array();
-			intent_res.forEach(function(value, key){
-	    	all_intents.push({ 
-	        id: intent_res[key]["id"], 
-	        name: intent_res[key]["name"]
-	    	}); 
-			})
-			var error_msg = ''
-			errors.forEach(function(error) {
-				error_msg += error.msg + '<br>'
-			})				
-			req.flash('error', error_msg)		
-			res.render('questions/add', { 
-		    title: 'Add New question',
-		    req: req,
-		    question: req.body.question,
-		    answer: req.body.answer,
-		    intent_details: all_intents
-		  })
-		});		
+		var error_msg = ''
+		errors.forEach(function(error) {
+			error_msg += error.msg + '<br>'
+		})				
+		req.flash('error', error_msg)		
+		res.redirect('/questions/add');			
   }
 })
 

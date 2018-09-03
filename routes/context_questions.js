@@ -5,7 +5,7 @@ var authentication_mdl = require('../middlewares/authentication');
 // Here getting all context questions
 app.get('/',authentication_mdl.is_login, function(req, res, next) {
 	req.getConnection(function(error, conn) {
-  	sql = 'SELECT context_questions.question as context_que, context_questions.answer as context_ans, context_questions.action_name, questions.question as main_que, questions.answer as main_ans,questions.id as question_id, questions.intent from context_questions INNER join questions on context_questions.question_id = questions.id where context_questions.is_active=true'
+  	sql = 'SELECT context_questions.question as context_que, context_questions.answer as context_ans, context_questions.action_name, questions.question as main_que, questions.answer as main_ans,questions.id as question_id, questions.intent from context_questions INNER join questions on context_questions.question_id = questions.id where context_questions.is_active=true order by questions.id desc'
 		conn.query(sql,function(err, rows, fields) {
 			final = {}
 			for (var i = 0; i < rows.length; i++) {
