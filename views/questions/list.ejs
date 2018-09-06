@@ -1,6 +1,4 @@
 <%- include ../layouts/header.ejs %>
-<script src="https://code.jquery.com/jquery-3.1.1.js" integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA=" crossorigin="anonymous"></script>
-
 <% if (messages.error) { %>
 	<p style="color:red"><%- messages.error %></p>
 <% } %>
@@ -9,6 +7,8 @@
 	<p style="color:green"><%- messages.success %></p>
 <% } %>	
 <div style="border:1px solid #ccc;">
+
+
 <table class="table table-hover">
 	<thead >
 		<tr style="background-color:#8c9499;color:#fff">
@@ -25,16 +25,16 @@
 				<tr>
 					<span><input type="hidden" name="que_id" id="que_id" value="<%= question.id%>"></span>
 					<td>
-						<div style="font-weight:bold;font-size:14px; padding-left:10px;"><%= question.question %><br/></div>
+						<div style="font-weight:bold;font-size:14px; padding-left:10px;" id="question-<%= question.id%>"><%= question.question %><br/></div>
 						<% if(question.sub_questions.lenght != 0) { %>
-							<ul>
-								<% for(var i=0; i < question.sub_questions.length; i++) { %>
-									<li style="font-size:14px;"><%= question.sub_questions[i] %></li>
-								<% } %>
+							<ul class="sub_questions_<%= question.id %>">
+									<% for(var i=0; i < question.sub_questions.length; i++) { %>
+										<li style="font-size:14px;" id="<%= question.sub_questions[i].split('_')[1] %>"><%= question.sub_questions[i].split('_')[0] %></li>
+									<% } %>
 							</ul>
 						<% } %>
 					</td>
-					<td><%= question.answer %></td>
+					<td id="answer-<%= question.id%>"><%= question.answer %></td>
 					<td>
 		    		<select class="selectpicker" name="intent" id="select_int-<%= question.id%>">  
 			      	<ul>
@@ -56,23 +56,45 @@
 						  <input type="text" class="form-control new_int-" name="intent" id="intent-<%= question.id%>"/>
 						<% } %>							
 					</td>
-					<% if(req.session.user[0].user_role == "Change Manager"){ %>
-						<td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button></td>
-					 <% } else{ %>  
-					  <td><button  class="btn btn-info" id="<%= question.id %>" value="<%= question.intent%>" disabled>Create Intent</button></td>
-					<% } %>											
+					<td>
+						<button  class="btn btn-info btncls" id="<%= question.id %>" value="<%= question.intent%>">Create Intent</button>
+						<button type="button" class="btn btn-info model_btn" id="<%= question.id%>" data-toggle="modal">Edit</button>
+					</td>
+					 
 				</tr>
 			<% }) %>
 		<% } %>
 	</tbody>
 </table>
 <div>
+	<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    	
+      <!-- Modal content-->
+      <div class="modal-content">
+      	<form id='myForm'>
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	          <h4 class="modal-title">Query Update Form</h4>
+	        </div>
+	        <div class="modal-body">
+	        </div>
+	        <div class="modal-footer">
+	        </div>
+	      </form>
+      </div>      
+    </div>
+  </div>
+
 
 <%- include ../layouts/footer.ejs %>
 
 <script>
 $(document).ready(function(){
-	$("button").on("click", function () {
+	
+	// creating intent 
+	$(".btncls").on("click", function () {
 		var que_id = $(this).attr('id');
 		var intent = $('#intent-'+ que_id).val();
 		var sel_int =$("#select_int-"+ que_id +" :selected").text();
@@ -96,6 +118,52 @@ $(document).ready(function(){
 	    }
 		});
 	});
+
+	// Modal popup form is generating 
+	$(".model_btn").on("click", function () {
+		var que_id = $(this).attr('id');
+		var question = $('#question-'+ que_id).text();
+		var answer = $('#answer-'+ que_id).text();
+		var html = ""
+		html += "Phrase : <input type='text' class='form-control' name='question' id='que_"+que_id+"' value='"+question+"'/>";
+		html += "Response : <input type='text' class='form-control' name='answer' id='ans_"+que_id+"' value='"+answer+"'/>";
+		html += "Sub phrases :"
+		$('.sub_questions_' + que_id +' li').each(function(){
+			var sub_id = $(this).attr('id');
+      var text = $(this).text();
+      html += "<input type='text' class='form-control' name='sub_questions-"+[sub_id]+"' id='sub_"+sub_id+"' value='"+text+"'/>";
+		});
+		$(".modal-body").html(html);
+		$(".modal-footer").html('<button type="button" class="btn btn-default fm-btn" id="form_'+que_id+'">Update</button>');
+		$('#myModal').modal('show');
+	});
+
+	// Modal popup submition form
+  $(document).on('click','.fm-btn',function(){
+    alert("test")
+    var values = {};
+		$.each($('#myForm').serializeArray(), function(i, field) {
+    	values[field.name] = field.value;
+		});
+		$.ajax({
+	    url : 'questions/edit',
+	    type : 'POST',
+	    data : {
+	        'que_id' :	23,
+	        'question' : values
+	    },
+	    success : function(data) {              
+	      alert("Successfully Intent Created");
+	      window.location.reload();
+	    },
+	    error : function(request,error)
+	    {
+	    	console.log("error");
+	      alert("Something went wrong");
+	    }
+		});
+  });
+
 });
 </script>
 

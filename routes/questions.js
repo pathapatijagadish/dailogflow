@@ -42,7 +42,7 @@ app.get('/', authentication_mdl.is_login, function(req, res, next) {
               rows[k]["sub_questions"] = []
               for (var i = 0; i < subrows.length; i++) {
                 if (rows[k].id == subrows[i].question_id) {
-                  rows[k]["sub_questions"].push(subrows[i].question)
+                  rows[k]["sub_questions"].push(subrows[i].question + "_" +subrows[i].id)
                 }
               }
             }
@@ -227,6 +227,7 @@ app.post('/add/intent', function(req, res){
 })
 
 
+
 app.post('/add_question', function(req, res, next){	
 	var post  = req.body;
 
@@ -324,6 +325,7 @@ app.post('/add', function(req, res, next){
 					}
 					req.getConnection(function(error, conn) {
 						conn.query('INSERT INTO questions SET ?', question, function(err, result) {
+							console.log(err)
 							if (err) {
 								req.flash('error', err)
 								res.render('questions/add', {
@@ -383,5 +385,11 @@ app.post('/add', function(req, res, next){
   }
 })
 
+
+app.post('/edit', function(req, res, next){	
+	var post  = req.body;
+	console.log("test")
+	console.log(post);
+});
 
 module.exports = app
