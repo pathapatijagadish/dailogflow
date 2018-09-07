@@ -140,21 +140,32 @@ $(document).ready(function(){
 
 	// Modal popup submition form
   $(document).on('click','.fm-btn',function(){
-    alert("test")
-    var values = {};
+    var que_id = $(this).attr('id').split('_')[1];
+    var question = {};
+    var sub_questions = []
 		$.each($('#myForm').serializeArray(), function(i, field) {
-    	values[field.name] = field.value;
+			queries = []
+			if (i < 2) {
+			  question[field.name] = field.value;
+			} else {
+			  sub_questions.push ({
+			  	id: field.name.split('-')[1],
+			  	question: field.value
+			  })
+			}
 		});
 		$.ajax({
 	    url : 'questions/edit',
 	    type : 'POST',
 	    data : {
-	        'que_id' :	23,
-	        'question' : values
+	        'que_id' :	que_id,
+	        'question' : question,
+	        'sub_questions' : sub_questions
 	    },
 	    success : function(data) {              
 	      alert("Successfully Intent Created");
-	      window.location.reload();
+	      console.log("success");
+	      $(".modal-bod").html('<a id="prev" title="Previous Slide">Previous Slide</a><a id="next" title="Next Slide">Next Slide</a>');
 	    },
 	    error : function(request,error)
 	    {

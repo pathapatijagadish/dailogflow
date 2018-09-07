@@ -388,8 +388,48 @@ app.post('/add', function(req, res, next){
 
 app.post('/edit', function(req, res, next){	
 	var post  = req.body;
-	console.log("test")
-	console.log(post);
+	var que_id = post.que_id
+	var main_que = post.question
+	var sub_questions = post.sub_questions
+
+	req.getConnection(function(error, conn) {
+		var promise = new Promise(function (resolve, reject) {
+                  	conn.query('UPDATE questions SET ? WHERE id = ?', [main_que, que_id], function(err, que_row) {
+                  		if (err){
+                  			console.log(err)
+                  		} else {
+                  			console.log("queries table updated successfully")
+                  		}
+                    	resolve(que_row);
+                  	});    
+                  });
+
+
+		var promises = [];
+
+		for (var i = 0; i < sub_questions.length; i++) 
+		{
+		  promises.push(update_subquery(sub_questions[i]));
+		}
+
+		function update_subquery(numb){
+		 	return new Promise(function(resolve, reject){
+		  	conn.query('UPDATE sub_questions SET question = ? WHERE id = ?', [numb.question, numb.id], function(err, subrows) {
+	        if (err){
+      			console.log("error")
+      		} else {
+      			console.log("sub query successfully updated")
+      		}
+      	});  
+			});
+		}
+
+    promise.then(function(main_row) {    	
+    	Promise.all(promises).then(function(subrows) {
+      });
+    })			
+   	res.send("data successfully updated");		
+	})
 });
 
 module.exports = app
