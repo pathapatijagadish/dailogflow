@@ -73,16 +73,18 @@
     	
       <!-- Modal content-->
       <div class="modal-content">
-      	<form id='myForm'>
-	        <div class="modal-header">
-	          <button type="button" class="close" data-dismiss="modal">&times;</button>
-	          <h4 class="modal-title">Query Update Form</h4>
-	        </div>
-	        <div class="modal-body">
-	        </div>
-	        <div class="modal-footer">
-	        </div>
-	      </form>
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h4 class="modal-title">Query Update Form</h4>
+	      </div>
+	      <div id="fm_data">
+	    		<form id='myForm'>
+	        	<div class="modal-body" id="body_cnt">
+	        	</div>
+	        	<div class="modal-footer">
+	        	</div>
+	      	</form>
+      	</div>
       </div>      
     </div>
   </div>
@@ -107,7 +109,8 @@ $(document).ready(function(){
 	        'que_id' :	que_id,
 	        'intent_id' : sel_int_id
 	    },
-	    success : function(data) {              
+	    success : function(data) {    
+	    	alert("testing");
 	      alert("Successfully Intent Created");
 	      window.location.reload();
 	    },
@@ -163,16 +166,19 @@ $(document).ready(function(){
 	        'sub_questions' : sub_questions
 	    },
 	    success : function(data) {              
-	      alert("Successfully Intent Created");
-	      console.log("success");
-	      $(".modal-bod").html('<a id="prev" title="Previous Slide">Previous Slide</a><a id="next" title="Next Slide">Next Slide</a>');
+	      $("#myForm").remove();
+	      $("#fm_data").append('<div class="modal-footer"><span style="float:left">Query Updated</span><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button></div>');
 	    },
 	    error : function(request,error)
 	    {
-	    	console.log("error");
 	      alert("Something went wrong");
+	      window.location.reload();
 	    }
 		});
+
+		$('#myModal').on('hidden.bs.modal', function (e) {
+ 			window.location.reload();
+ 		});
   });
 
 });
